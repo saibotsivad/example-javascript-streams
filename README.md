@@ -30,6 +30,8 @@ node 2-upstream-server.js
 
 TODO: using Cloudflare as a middleman / proxy to prevent exposing your upstream.
 
+There's a stub code in [3-cloudflare-tunnel.js](./3-cloudflare-tunnel.js) that's untested but should basically be correct.
+
 ## The Browser
 
 > [!NOTE]
