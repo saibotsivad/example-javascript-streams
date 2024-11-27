@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+	<script>
+		async function fetchStreamingData(url) {
+			const response = await fetch(url)
+			if (!response.ok) throw response
+			const reader = response.body.getReader()
+			const decoder = new TextDecoder()
+			let done = false
+			while (!done) {
+				const { value, done: readerDone } = await reader.read()
+				done = readerDone
+				if (value) {
+					const lines = decoder.decode(value, { stream: true })
+					for (const line of lines.split('\n').filter(Boolean)) {
+						try {
+							const pre = document.createElement('pre')
+							pre.textContent = JSON.stringify(JSON.parse(line), undefined, 4)
+							document.body.insertBefore(pre, document.body.firstChild)
+						} catch (error) {
+							console.log('Bad JSON!', line)
+							throw error
+						}
+					}
+				}
+			}
+			console.log('stream completed')
+		}
+		fetchStreamingData('http://127.0.0.1:9001/stream')
+			.then(() => {
+				console.log('stream completed')
+			})
+			.catch(error => {
+				console.error('Failure to fetch', error)
+			})
+	</script>
+</head>
+<body>
+</body>
+</html>
